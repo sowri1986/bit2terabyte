@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { ExternalLink, Github, Shield, Lock, Server, Database } from 'lucide-react';
+import { ExternalLink, Github, Shield, Lock, Server, Database, FileText } from 'lucide-react';
 import SectionTransition from './SectionTransition';
 import { cn } from '@/lib/utils';
 
@@ -53,6 +53,15 @@ const projects: Project[] = [
     icon: <Server className="h-5 w-5" />,
     link: "#",
     github: "#"
+  },
+  {
+    id: 5,
+    title: "PDF Manager",
+    description: "A simple and intuitive tool to merge multiple PDF files into one. Upload, arrange, and merge your PDFs seamlessly.",
+    tags: ["React", "TypeScript", "PDF Tools"],
+    image: "https://images.unsplash.com/photo-1542435503-956c469947f6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2670&q=80",
+    icon: <FileText className="h-5 w-5" />,
+    link: "/pdf-manager"
   }
 ];
 
@@ -114,6 +123,8 @@ const ProjectsSection: React.FC = () => {
                   {project.link && (
                     <a
                       href={project.link}
+                      target={project.link === '/pdf-manager' ? '_blank' : undefined}
+                      rel={project.link === '/pdf-manager' ? 'noopener noreferrer' : undefined}
                       className="flex items-center text-sm text-primary hover:text-primary/80 transition-colors"
                       aria-label={`View ${project.title} project`}
                     >
