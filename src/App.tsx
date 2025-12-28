@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import NotFound from "./pages/NotFound";
+import MyCareer from "./pages/MyCareer";
 import PdfManager from "./apps/pdf-manager/PdfManager";
 import { ThemeProvider } from "./context/ThemeContext";
 
@@ -21,6 +22,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/my-career" element={<MyCareer />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:id" element={<BlogPost />} />
             <Route path="/pdf-manager" element={<PdfManager />} />
