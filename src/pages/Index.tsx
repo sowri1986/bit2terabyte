@@ -3,7 +3,6 @@ import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
-import AboutSection from '@/components/AboutSection';
 import ProjectsSection from '@/components/ProjectsSection';
 import BlogSection from '@/components/BlogSection';
 import ContactSection from '@/components/ContactSection';
@@ -29,7 +28,6 @@ const Index = () => {
       
       <main className="flex-grow">
         <HeroSection />
-        <AboutSection />
         <ProjectsSection />
         <BlogSection />
         <ContactSection />

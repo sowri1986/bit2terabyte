@@ -4,10 +4,10 @@ import { ArrowDown, Lock, Shield, ShieldCheck } from 'lucide-react';
 import SectionTransition from './SectionTransition';
 
 const HeroSection: React.FC = () => {
-  const scrollToAbout = () => {
-    const aboutSection = document.querySelector('#about');
-    if (aboutSection) {
-      aboutSection.scrollIntoView({ behavior: 'smooth' });
+  const scrollToProjects = () => {
+    const projectsSection = document.querySelector('#projects');
+    if (projectsSection) {
+      projectsSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -55,9 +55,9 @@ const HeroSection: React.FC = () => {
       </div>
 
       <button 
-        onClick={scrollToAbout}
+        onClick={scrollToProjects}
         className="absolute bottom-10 left-1/2 transform -translate-x-1/2 flex flex-col items-center text-muted-foreground hover:text-foreground transition-colors"
-        aria-label="Scroll to about section"
+        aria-label="Scroll to projects section"
       >
         <span className="text-sm mb-2">Scroll Down</span>
         <ArrowDown className="h-4 w-4 animate-bounce" />
