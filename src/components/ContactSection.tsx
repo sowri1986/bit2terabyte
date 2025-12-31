@@ -1,9 +1,15 @@
 
 import React, { useState } from 'react';
-import { AtSign, Github, Linkedin, Mail, MapPin, Phone, Send } from 'lucide-react';
+import { AtSign, Github, Linkedin, Mail, MapPin, Phone, Send, AlertCircle } from 'lucide-react';
 import SectionTransition from './SectionTransition';
 import { cn } from '@/lib/utils';
-import nodemailer from 'nodemailer';
+
+// Configure your form endpoint here
+// Option 1: Web3Forms - Get your access key at https://web3forms.com (free, no signup needed)
+// Option 2: Formspree - Use https://formspree.io/f/YOUR_FORM_ID
+// Option 3: Your own API endpoint
+const CONTACT_FORM_ENDPOINT = 'https://api.web3forms.com/submit';
+const WEB3FORMS_ACCESS_KEY = '49185e10-9cc7-4e51-98c7-a7cd338086a5';
 
 const ContactSection: React.FC = () => {
   const [formState, setFormState] = useState({
@@ -13,29 +19,57 @@ const ContactSection: React.FC = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formStatus, setFormStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormState(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
-    setTimeout(() => {
+    setFormStatus('idle');
+    setErrorMessage('');
+
+    try {
+      const response = await fetch(CONTACT_FORM_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          name: formState.name,
+          email: formState.email,
+          message: formState.message,
+          subject: `New Contact Form Submission from ${formState.name}`,
+          from_name: 'Bit2Terabyte Contact Form',
+        }),
+      });
+
+      const result = await response.json();
+
+      if (response.ok && result.success) {
+        setFormStatus('success');
+        setFormState({ name: '', email: '', message: '' });
+        // Reset form status after 5 seconds
+        setTimeout(() => {
+          setFormStatus('idle');
+        }, 5000);
+      } else {
+        setFormStatus('error');
+        setErrorMessage(result.message || 'Something went wrong. Please try again.');
+      }
+    } catch (error) {
+      setFormStatus('error');
+      setErrorMessage('Failed to send message. Please check your connection and try again.');
+    } finally {
       setIsSubmitting(false);
-      setFormStatus('success');
-      setFormState({ name: '', email: '', message: '' });
-      
-      // Reset form status after 3 seconds
-      setTimeout(() => {
-        setFormStatus('idle');
-      }, 3000);
-    }, 1000);
+    }
   };
-  
+
   return (
     <section id="contact" className="section-container">
       <SectionTransition>
@@ -53,7 +87,7 @@ const ContactSection: React.FC = () => {
               Have a security challenge or want to discuss potential collaborations?
               I'm always interested in new projects and opportunities.
             </p>
-            
+
             <div className="space-y-6">
               <div className="flex items-start">
                 <div className="bg-primary/10 p-3 rounded-lg text-primary mr-4">
@@ -66,8 +100,8 @@ const ContactSection: React.FC = () => {
                   </a>
                 </div>
               </div>
-              
-               {/* <div className="flex items-start">
+
+              {/* <div className="flex items-start">
                 <div className="bg-primary/10 p-3 rounded-lg text-primary mr-4">
                   <Phone className="h-5 w-5" />
                 </div>
@@ -78,7 +112,7 @@ const ContactSection: React.FC = () => {
                   </a>
                 </div>
               </div>  */}
-              
+
               <div className="flex items-start">
                 <div className="bg-primary/10 p-3 rounded-lg text-primary mr-4">
                   <MapPin className="h-5 w-5" />
@@ -87,24 +121,23 @@ const ContactSection: React.FC = () => {
                   <h4 className="font-medium">Location</h4>
                   <p className="text-muted-foreground">
                     London, UK
-                    London, UK
                   </p>
                 </div>
               </div>
             </div>
-            
+
             <div className="mt-8">
               <h4 className="font-medium mb-4">Connect</h4>
               <div className="flex space-x-4">
-                <a 
-                  href="https://www.linkedin.com/in/sowri1986/" 
+                <a
+                  href="https://www.linkedin.com/in/sowri1986/"
                   className="bg-secondary p-3 rounded-full text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-all"
                   aria-label="LinkedIn Profile"
                 >
                   <Linkedin className="h-5 w-5" />
                 </a>
-                <a 
-                  href="https://github.com/sowri1986" 
+                <a
+                  href="https://github.com/sowri1986"
                   className="bg-secondary p-3 rounded-full text-secondary-foreground hover:bg-primary hover:text-primary-foreground transition-all"
                   aria-label="GitHub Profile"
                 >
@@ -121,17 +154,32 @@ const ContactSection: React.FC = () => {
             </div>
           </div>
         </SectionTransition>
-        
+
         <SectionTransition delay={200}>
           <div className="glass-card p-8 rounded-xl">
             <h3 className="text-xl font-semibold mb-6">Send a Message</h3>
-            
+
             {formStatus === 'success' ? (
               <div className="bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 p-4 rounded-lg flex items-center">
                 <div className="bg-green-100 dark:bg-green-800/30 p-2 rounded-full mr-3">
                   <Send className="h-5 w-5" />
                 </div>
                 <p>Your message has been sent successfully!</p>
+              </div>
+            ) : formStatus === 'error' ? (
+              <div className="space-y-4">
+                <div className="bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 p-4 rounded-lg flex items-center">
+                  <div className="bg-red-100 dark:bg-red-800/30 p-2 rounded-full mr-3">
+                    <AlertCircle className="h-5 w-5" />
+                  </div>
+                  <p>{errorMessage}</p>
+                </div>
+                <button
+                  onClick={() => setFormStatus('idle')}
+                  className="text-primary hover:underline text-sm"
+                >
+                  Try again
+                </button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-6">
@@ -150,7 +198,7 @@ const ContactSection: React.FC = () => {
                     placeholder="Your name"
                   />
                 </div>
-                
+
                 <div>
                   <label htmlFor="email" className="block text-sm font-medium mb-2">
                     Email
@@ -166,7 +214,7 @@ const ContactSection: React.FC = () => {
                     placeholder="your.email@example.com"
                   />
                 </div>
-                
+
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium mb-2">
                     Message
@@ -182,7 +230,7 @@ const ContactSection: React.FC = () => {
                     placeholder="Tell me about your project or inquiry..."
                   />
                 </div>
-                
+
                 <button
                   type="submit"
                   disabled={isSubmitting}
